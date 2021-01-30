@@ -1,0 +1,77 @@
+{%extends 'accounts/main.html'%}
+
+{%block content%}
+{% include 'accounts/status.html'%}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Customers:</h5>
+                </div>
+                <div class="card-body">
+
+                    <a class="btn btn-primary" href="">Create Customer</a>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Customer</th>
+                                <th scope="col">Order</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>Ahmed</td>
+                                <td>Pizza</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Last 5 orders:</h5>
+                </div>
+                <div class="card-body">
+
+                    <a class="btn btn-primary" href="">Create order</a>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Product</th>
+                                <th scope="col">Date Ordered </th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Update </th>
+                                <th scope="col">Remove</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row"></th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{%endblock%}
