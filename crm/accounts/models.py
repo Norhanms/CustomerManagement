@@ -36,7 +36,7 @@ class Product(models.Model):
 
 class Order(models.Model):
     STATUS = (
-        ('Pending', 'Pending'),
+        ('pending', 'pending'),
         ('Out for delivery', 'Out for delivery'),
         ('delivered', 'delivered'),
     )
