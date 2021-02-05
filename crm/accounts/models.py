@@ -47,4 +47,5 @@ class Order(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return "customer:{}---{}---{}".format(self.customer, self.product.name, self.status)
+        return self.product.name
+        # return "customer:{}---{}---{}".format(self.customer, self.product.name, self.status)
