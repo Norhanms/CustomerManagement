@@ -1,7 +1,16 @@
 from django.shortcuts import render, redirect
 from .models import *
 from .forms import OrderForm
+from django.forms import inlineformset_factory
+from django.http import HttpResponse
+from django.template import loader
 
+
+def my_view(request):
+    # View code here...
+    t = loader.get_template('accounts/index.html')
+    c = {'foo': 'bar'}
+    return HttpResponse(t.render(c, request), )
 # Create your views here.
 
 
@@ -44,15 +53,34 @@ def customer(request, pk_test):
     return render(request, 'accounts/customer.html', context)
 
 
-def createOrder(request):
-    form = OrderForm()
+'''
+def createOrder(request, pk_test):
+    customer = Customer.objects.get(id=pk_test)
+    form = OrderForm(initial={'customer': customer})
     if request.method == 'POST':
         # print(request.POST)
         form = OrderForm(request.POST)
-        if form. is_valid():
+        if form.is_valid():
             form.save()
-            return redirect('/')
+            return redirect(customer)
     context = {'form': form}
+    return render(request, 'accounts/order_form.html', context)
+'''
+# Multiple forms inside one form using inlineformset_factory
+
+
+def createOrder(request, pk_test):
+    OrderFormSet = inlineformset_factory(
+        Customer, Order, fields=('product', 'status'))
+    customer = Customer.objects.get(id=pk_test)
+    formset = OrderFormSet(instance=customer)
+    if request.method == 'POST':
+        # print(request.POST)
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(customer)
+    context = {'formset': formset}
     return render(request, 'accounts/order_form.html', context)
 
 
