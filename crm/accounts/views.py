@@ -5,6 +5,8 @@ from django.forms import inlineformset_factory
 from django.http import HttpResponse
 from django.template import loader
 
+from .filters import OrderFilter
+
 
 def my_view(request):
     # View code here...
@@ -44,10 +46,15 @@ def customer(request, pk_test):
     customer = Customer.objects.get(id=pk_test)
     orders = customer.order_set.all()
     order_count = customer.order_set.count()  # orders.count()
+    myfilter = OrderFilter(request.GET, queryset=orders)
+    orders = myfilter.qs
+    searchedOrderCount = orders.count()
     context = {
         'customer': customer,
         'orders': orders,
         'order_count': order_count,
+        'myfilter': myfilter,
+        'searchedOrderCount': searchedOrderCount
     }
 
     return render(request, 'accounts/customer.html', context)
