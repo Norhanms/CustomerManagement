@@ -1,8 +1,10 @@
 from django.urls import path
 from .views import home, products, customer, createOrder, updateOrder, deleteOrder
-from .views import my_view
+from .views import my_view, register_page, login_page
 urlpatterns = [
     path('', home, name='home'),
+    path('register', register_page, name='register_page'),
+    path('login', login_page, name='login_page'),
     path('products/', products, name='products'),
     path('customer/<str:pk_test>', customer, name='customer'),
     path('create_order/<str:pk_test>', createOrder, name='create_order'),

@@ -4,8 +4,8 @@ from .forms import OrderForm
 from django.forms import inlineformset_factory
 from django.http import HttpResponse
 from django.template import loader
-
 from .filters import OrderFilter
+from django.contrib.auth.forms import UserCreationForm
 
 
 def my_view(request):
@@ -110,3 +110,11 @@ def deleteOrder(request, pk):
         return redirect('/')
     context = {'item': order}
     return render(request, 'accounts/delete.html', context)
+
+
+def register_page(request):
+    return render(request, 'accounts/register.html')
+
+
+def login_page(request):
+    return render(request, 'accounts/login.html')
