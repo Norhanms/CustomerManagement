@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
 from .models import *
-from .forms import OrderForm
 from django.forms import inlineformset_factory
 from django.http import HttpResponse
 from django.template import loader
 from .filters import OrderFilter
+from .forms import OrderForm, CreateUserForm
+from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -113,7 +115,49 @@ def deleteOrder(request, pk):
 
 
 def register_page(request):
-    return render(request, 'accounts/register.html')
+    print("-----------first request GET-----------")
+    form = UserCreationForm()
+    print("-----------Check if POST or not-----------")
+    if request.method == 'POST':
+        print("-----------second request POST-----------")
+        form = UserCreationForm(data=request.POST or None)
+        username = request.POST.get('username')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        form2 = {
+            'username': username,
+            'password1': password1,
+            'password2': password2,
+        }
+        print(form.data)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "account created successfuly!")
+        else:
+            print("Not valid form")
+            messages.error(
+                request, "A Problem happend while creating your account")
+    '''
+    if request.method == 'POST':
+        print("POST")
+        form = UserCreationForm(data=request.POST)
+        print(form)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "account created successfuly!")
+            redirect('home')
+        else:
+            print("Not valid form")
+            messages.error(
+                request, "A Problem happend while creating your account")
+    '''
+    print("-----------Send context after GET-----------")
+    context = {
+        'form': form,
+    }
+    print(context['form'])
+    return render(request, 'accounts/register.html', context)
 
 
 def login_page(request):
