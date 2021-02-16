@@ -8,6 +8,7 @@ from .filters import OrderFilter
 from .forms import OrderForm, CreateUserForm
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout
 
 
 def my_view(request):
@@ -25,7 +26,6 @@ def home(request):
     total_orders = orders.count()
     delivered = orders.filter(status='delivered').count()
     pending = orders.filter(status='pending').count()
-    print(pending)
     context = {
         'orders': orders,
         'customers': customers,
@@ -35,7 +35,6 @@ def home(request):
         'pending': pending
 
     }
-    print(pending)
     return render(request, 'accounts/dashboard.html', context)
 
 
@@ -115,22 +114,9 @@ def deleteOrder(request, pk):
 
 
 def register_page(request):
-    print("-----------first request GET-----------")
     form = UserCreationForm()
-    print("-----------Check if POST or not-----------")
     if request.method == 'POST':
-        print("-----------second request POST-----------")
         form = UserCreationForm(data=request.POST or None)
-        username = request.POST.get('username')
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-        form2 = {
-            'username': username,
-            'password1': password1,
-            'password2': password2,
-        }
-        print(form.data)
-
         if form.is_valid():
             form.save()
             messages.success(request, "account created successfuly!")
@@ -138,27 +124,28 @@ def register_page(request):
             print("Not valid form")
             messages.error(
                 request, "A Problem happend while creating your account")
-    '''
-    if request.method == 'POST':
-        print("POST")
-        form = UserCreationForm(data=request.POST)
-        print(form)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "account created successfuly!")
-            redirect('home')
-        else:
-            print("Not valid form")
-            messages.error(
-                request, "A Problem happend while creating your account")
-    '''
-    print("-----------Send context after GET-----------")
     context = {
         'form': form,
     }
-    print(context['form'])
     return render(request, 'accounts/register.html', context)
 
 
 def login_page(request):
+    if request.method == 'POST':
+        print("post")
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, "login successfuly")
+            context = {
+                'username': user.get_username
+            }
+            return redirect('home')
+            # return render(request, 'accounts/dashboard.html', context)
+        else:
+            messages.error(request, "Error while logging in")
+
     return render(request, 'accounts/login.html')
