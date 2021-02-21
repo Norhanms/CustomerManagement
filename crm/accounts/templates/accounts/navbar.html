@@ -17,7 +17,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'products' %}">Products</a>
                 </li>
-
+                {% if not logedin%}
                 <li class="nav-item dropdown me-auto">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -28,12 +28,14 @@
                         <li><a class="dropdown-item" href="{% url 'register_page' %}">register</a></li>
                     </ul>
                 </li>
-
+                {%endif%}
             </ul>
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+            <div class="d-flex text-light">
+                {%if logedin%}
+                <span class="px-3">Hello,{{request.user}}</span>
+                <a href="{% url 'logout' %}">logout</a>
+                {%endif%}
+            </div>
         </div>
     </div>
 </nav>
