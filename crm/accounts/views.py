@@ -10,7 +10,8 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .decorators import unauthenticated_user, allowed_user
+from .decorators import unauthenticated_user, allowed_user, admin_only
+from django.contrib.auth.models import Group
 
 
 def my_view(request):
@@ -22,11 +23,12 @@ def my_view(request):
 
 
 @login_required(login_url='login_page')
-@allowed_user(allowed_roles=['admin'])
+@admin_only
 def home(request):
     if request.user.is_authenticated:
         logedin = True
         print(request.user.is_authenticated)
+        groups = request.user.groups.all()
     else:
         logedin = False
     orders = Order.objects.all()
@@ -45,10 +47,12 @@ def home(request):
         'logedin': logedin
 
     }
+    print('home function', groups)
     return render(request, 'accounts/dashboard.html', context)
 
 
 @login_required(login_url='login_page')
+@allowed_user(allowed_roles=['admin'])
 def products(request):
     if request.user.is_authenticated:
         logedin = True
@@ -60,6 +64,7 @@ def products(request):
 
 @login_required(login_url='login_page')
 # @unauthenticated_user
+@allowed_user(allowed_roles=['admin'])
 def customer(request, pk_test):
     if request.user.is_authenticated:
         logedin = True
@@ -99,6 +104,7 @@ def createOrder(request, pk_test):
 
 
 @login_required(login_url='login_page')
+@allowed_user(allowed_roles=['admin'])
 def createOrder(request, pk_test):
     if request.user.is_authenticated:
         return redirect(request, 'home')
@@ -118,6 +124,7 @@ def createOrder(request, pk_test):
 
 
 @login_required(login_url='login_page')
+@allowed_user(allowed_roles=['admin'])
 def updateOrder(request, pk_test):
     order = Order.objects.get(id=pk_test)
     form = OrderForm(instance=order)
@@ -131,6 +138,7 @@ def updateOrder(request, pk_test):
 
 
 @login_required(login_url='login_page')
+@allowed_user(allowed_roles=['admin'])
 def deleteOrder(request, pk):
     order = Order.objects.get(id=pk)
     if request.method == 'POST':
@@ -146,8 +154,13 @@ def register_page(request):
     if request.method == 'POST':
         form = UserCreationForm(data=request.POST or None)
         if form.is_valid():
-            form.save()
-            messages.success(request, "account created successfuly!")
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            group = Group.objects.get(name='customer')
+            user.groups.add(group)
+            messages.success(
+                request, "account created successfuly for user {}!".format(username))
+            return redirect('login_page')
         else:
             print("Not valid form")
             messages.error(
@@ -168,7 +181,7 @@ def login_page(request):
 
         if user is not None:
             login(request, user)
-            messages.success(request, "login successfuly")
+            messages.success(request, "login successfuly", user.get_username)
             context = {
                 'username': user.get_username,
             }
@@ -185,5 +198,14 @@ def logoutUser(request):
     return redirect('login_page')
 
 
+@login_required(login_url='login_page')
+@allowed_user(allowed_roles=['customer'])
 def userPage(request):
-    return render(request, 'accounts/user.html')
+    if request.user.is_authenticated:
+        logedin = True
+    else:
+        logedin = False
+    context = {
+        'logedin': logedin
+    }
+    return render(request, 'accounts/user.html', context)
